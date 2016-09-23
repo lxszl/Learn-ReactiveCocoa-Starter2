@@ -11,6 +11,9 @@
 #import <ReactiveCocoa/ReactiveCocoa.h>
 #import <Accounts/Accounts.h>
 #import <Social/Social.h>
+#import "RWTweet.h" 
+#import "LinqToObjectiveC.h"
+
 
 typedef NS_ENUM(NSInteger, RWTwitterInstantError) {
     RWTwitterInstantErrorAccessDenied, 
@@ -66,7 +69,7 @@ static NSString * const RWTwitterInstantDomain = @"TwitterInstant";
     self.twitterAccountType = [self.accountStore
                                accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
     
-    [[[[[[self requestAccessToTwitterSignal]
+    [[[[[[[self requestAccessToTwitterSignal]
       then:^RACSignal *{
         
         return self.searchText.rac_textSignal;
@@ -75,14 +78,21 @@ static NSString * const RWTwitterInstantDomain = @"TwitterInstant";
         
           return [self isValidSearchText:text];
     }]
+        throttle:0.5]
       flattenMap:^RACStream *(NSString *text) {
         
         return [self signalForSearchWithText:text];
     }]
       deliverOn:[RACScheduler mainThreadScheduler]]
-     subscribeNext:^(id value) {
+     subscribeNext:^(NSDictionary *jsonSearchResult) {
         
-        NSLog(@"%@",value);
+         NSArray *statuses = jsonSearchResult[@"statuses"];
+         NSArray *tweets = [statuses linq_select:^id(id tweet) {
+             
+             return [RWTweet tweetWithStatus:tweet];
+         }];
+         
+        [self.resultsViewController displayTweets:tweets];
     } error:^(NSError *error) {
         
         NSLog(@"An error occurred: %@", error);

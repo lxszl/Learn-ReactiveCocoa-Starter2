@@ -4,6 +4,11 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>LinqToObjectiveC.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Pods.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -22,17 +27,22 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>7FF75F9FC18280D3819BB8108D551391</key>
+		<key>08F2BCCAF85E08C30B1428C1B6C6DD7E</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>A6A6F589159CC65FD3242395B34B357D</key>
+		<key>118C86F7B1CFFBD8C779303B02500F49</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>D0C2B3615F8E4F6C444D92BFADE97393</key>
+		<key>4CBD6722C8B357F894EEC124D3AA2031</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>5BAB08551CF4AE5AEC6D567DC3FEE23E</key>
 		<dict>
 			<key>primary</key>
 			<true/>

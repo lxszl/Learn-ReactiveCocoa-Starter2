@@ -33,6 +33,20 @@
   [self.tableView reloadData];
 }
 
+-(RACSignal *)signalForLoadingImage:(NSString *)imageUrl {
+    
+    RACScheduler *scheduler = [RACScheduler schedulerWithPriority:RACSchedulerPriorityBackground];
+    
+    return [[RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+        
+        NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageUrl]];
+        UIImage *image = [UIImage imageWithData:data];
+        [subscriber sendNext:image];
+        [subscriber sendCompleted];
+        
+        return nil;
+    }] subscribeOn:scheduler];
+}
 
 #pragma mark - Table view data source
 
@@ -44,14 +58,22 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  static NSString *CellIdentifier = @"Cell";
-  RWTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
-  
-  RWTweet *tweet = self.tweets[indexPath.row];
-  cell.twitterStatusText.text = tweet.status;
-  cell.twitterUsernameText.text = [NSString stringWithFormat:@"@%@",tweet.username];
-  
-  return cell;
+    static NSString *CellIdentifier = @"Cell";
+    RWTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+    
+    RWTweet *tweet = self.tweets[indexPath.row];
+    cell.twitterAvatarView.image = nil;
+    [[[[self signalForLoadingImage:tweet.profileImageUrl]
+       takeUntil:cell.rac_prepareForReuseSignal]
+      deliverOn:[RACScheduler mainThreadScheduler]]
+     subscribeNext:^(UIImage *image) {
+         
+         cell.twitterAvatarView.image = image;
+     }];
+    cell.twitterStatusText.text = tweet.status;
+    cell.twitterUsernameText.text = [NSString stringWithFormat:@"@%@",tweet.username];
+    
+    return cell;
 }
 
 @end
